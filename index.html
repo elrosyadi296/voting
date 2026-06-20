@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Voting Ziarah TA 2026/2027 — MTs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#0E1B17;
+  --bg-2:#0B1612;
+  --surface:#15251F;
+  --surface-2:#1C2F27;
+  --surface-3:#24382F;
+  --line: rgba(243,236,218,0.15);
+  --line-strong: rgba(243,236,218,0.25);
+  --ink:#F3ECDA;
+  --ink-dim:#A9B7AD;
+  --ink-faint: rgba(243,236,218,0.45);
+  --gold:#D2A24C;
+  --gold-soft: rgba(210,162,76,0.16);
+  --gold-line: rgba(210,162,76,0.45);
+  --jateng:#C2693B;
+  --jateng-soft: rgba(194,105,59,0.14);
+  --jatim:#2F9088;
+  --jatim-soft: rgba(47,144,136,0.14);
+  --danger:#C8615C;
+  --danger-soft: rgba(200,97,92,0.14);
+  --font-display:'Fraunces', serif;
+  --font-body:'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:'Space Mono', monospace;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow-card: 0 24px 60px -20px rgba(0,0,0,0.55);
+  --ease: cubic-bezier(.22,.9,.27,1);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse 1200px 800px at 15% -10%, rgba(210,162,76,0.10), transparent 60%),
+    radial-gradient(ellipse 1000px 900px at 110% 10%, rgba(47,144,136,0.08), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--font-display); margin:0; font-weight:600; letter-spacing:-0.01em;}
+p{margin:0;}
+button{font-family:inherit;}
+::selection{background:var(--gold-soft); color:var(--ink);}
+
+.ambient{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5;
+  background-image: radial-gradient(circle at center, transparent 0, transparent 38px, rgba(210,162,76,0.05) 39px, rgba(210,162,76,0.05) 40px, transparent 41px);
+  background-size:140px 140px; background-position: -30px -30px;
+}
+.ambient::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 100%);
+}
+
+#app{position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column;}
+
+/* ============================================================
+   TOP BAR + PROGRESS
+   ============================================================ */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px clamp(18px,5vw,48px) 0; max-width:880px; width:100%; margin:0 auto;
+}
+.brand{
+  display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:12px; letter-spacing:0.12em; color:var(--ink-faint); text-transform:uppercase;
+}
+.brand .mark{ width:18px;height:18px; flex:none; }
+.progress-rail{ display:flex; align-items:center; gap:10px; }
+.progress-rail .step{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
+.star-dot{ width:14px; height:14px; transition: transform .4s var(--ease); }
+.star-dot path{ fill:none; stroke:var(--ink-faint); stroke-width:1.4; transition: all .4s var(--ease); }
+.step.done .star-dot path{ fill:var(--gold); stroke:var(--gold); }
+.step.active .star-dot{ transform:scale(1.25) rotate(15deg); }
+.step.active .star-dot path{ stroke:var(--gold); }
+.step.active .label{ color:var(--gold); }
+.progress-rail .sep{ width:18px; height:1px; background:var(--line-strong); }
+.progress-rail .label{ display:none; }
+@media (min-width:700px){ .progress-rail .label{ display:inline; } }
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+main#screens{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:28px clamp(18px,5vw,48px) 60px;
+}
+.screen{ display:none; width:100%; max-width:760px; }
+.screen.active{ display:block; animation: screenIn .55s var(--ease) both; }
+@keyframes screenIn{
+  from{ opacity:0; transform:translateY(18px) scale(.985); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.eyebrow .rule{ height:1px; width:36px; background:var(--gold-line); }
+.hero-title{ font-size:clamp(30px,5vw,46px); line-height:1.08; margin-bottom:18px; }
+.hero-title em{ font-style:italic; color:var(--gold); font-weight:500; }
+.lede{ font-size:17px; line-height:1.65; color:var(--ink-dim); max-width:580px; }
+.lede + .lede{ margin-top:12px; }
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:clamp(24px,4vw,40px); box-shadow:var(--shadow-card); }
+
+/* form dropdowns */
+.form-group{ margin-top: 24px; max-width: 480px; }
+.form-label{ display:block; font-size:14px; font-weight:600; color:var(--ink); margin-bottom:8px; }
+.form-select{
+  width:100%; appearance:none; background-color:var(--surface-2); border:1px solid var(--line-strong);
+  color:var(--ink); font-family:var(--font-body); font-size:16px; font-weight:500;
+  padding:16px 20px; border-radius:var(--radius-sm); cursor:pointer;
+  transition:all .2s var(--ease); outline:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23D2A24C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center; background-size: 20px;
+}
+.form-select:focus{ border-color:var(--gold); box-shadow:0 0 0 4px var(--gold-soft); background-color:var(--surface-3); }
+.form-select:disabled{ opacity:0.5; cursor:not-allowed; background-image:none; }
+.form-select option{ background:var(--surface); color:var(--ink); }
+
+/* announcement notice box */
+.notice{
+  margin-top:26px; padding:18px 20px; background:var(--surface-2);
+  border:1px solid var(--line); border-left:3px solid var(--gold); border-radius:var(--radius-sm);
+  display:flex; gap:14px; align-items:flex-start;
+}
+.notice .ico{ flex:none; margin-top:2px; }
+.notice .txt{ font-size:14.5px; line-height:1.6; color:var(--ink-dim); }
+.notice .txt b{ color:var(--ink); font-weight:600; }
+.notice ul{ margin:8px 0 0; padding-left:18px; }
+.notice li{ margin:4px 0; }
+
+/* buttons */
+.btn{
+  appearance:none; border:none; cursor:pointer; font-family:var(--font-body); font-weight:700; font-size:15px;
+  border-radius:999px; padding:15px 28px; display:inline-flex; align-items:center; gap:10px;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), opacity .2s;
+}
+.btn-primary{ background:var(--gold); color:#1A1304; box-shadow: 0 10px 30px -8px rgba(210,162,76,0.55); }
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 36px -8px rgba(210,162,76,0.65); }
+.btn-primary:active{ transform:translateY(0) scale(.98); }
+.btn-primary:disabled{ opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-ghost{ background:transparent; color:var(--ink-dim); border:1px solid var(--line-strong); }
+.btn-ghost:hover{ color:var(--ink); border-color:var(--gold-line); background:var(--surface-2); }
+.btn-row{ display:flex; align-items:center; gap:14px; margin-top:34px; flex-wrap:wrap; }
+.btn svg{ width:16px; height:16px; }
+
+.breadcrumb{
+  display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-faint); margin-bottom:6px;
+}
+.breadcrumb .back{ cursor:pointer; color:var(--ink-dim); text-decoration:underline; text-decoration-color:var(--line-strong); }
+.breadcrumb .back:hover{ color:var(--gold); }
+
+/* who-is-this confirm */
+.identity-confirm{
+  margin-top:22px; padding:20px 22px; background:var(--surface-2);
+  border:1px solid var(--gold-line); border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.identity-confirm .who .lbl{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; }
+.identity-confirm .who .nm{ font-family:var(--font-display); font-size:24px; margin-top:2px; }
+.identity-confirm .who .kl{ color:var(--ink-dim); font-size:13px; margin-top:2px; }
+
+/* vote cards */
+.vote-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:26px; }
+@media (max-width:640px){ .vote-grid{ grid-template-columns:1fr; } }
+.vote-card{
+  position:relative; border-radius:var(--radius-lg); padding:26px 24px 24px;
+  border:1.5px solid var(--line); background:var(--surface-2);
+  cursor:pointer; transition: all .3s var(--ease); text-align:left; animation: popIn .5s var(--ease) both;
+}
+.vote-card:hover{ transform:translateY(-4px); }
+.vote-card.selected{ box-shadow: var(--shadow-card); transform:translateY(-4px); }
+.vote-card[data-opt="jateng"].selected{ border-color:var(--jateng); background:var(--jateng-soft); }
+.vote-card[data-opt="jatim"].selected{ border-color:var(--jatim); background:var(--jatim-soft); }
+.vote-card .tag{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:8px; padding:5px 10px; border-radius:999px;
+}
+.vote-card[data-opt="jateng"] .tag{ color:var(--jateng); background:rgba(194,105,59,0.16); }
+.vote-card[data-opt="jatim"] .tag{ color:var(--jatim); background:rgba(47,144,136,0.16); }
+.vote-card h3{ font-size:25px; margin-top:14px; }
+.vote-card .price{ font-family:var(--font-mono); font-size:22px; margin-top:6px; font-weight:700; }
+.vote-card[data-opt="jateng"] .price{ color:var(--jateng); }
+.vote-card[data-opt="jatim"] .price{ color:var(--jatim); }
+.vote-card .price small{ font-size:12px; color:var(--ink-faint); font-weight:400; font-family:var(--font-body); }
+.vote-card .check{
+  position:absolute; top:20px; right:20px; width:26px; height:26px;
+  border-radius:50%; border:1.5px solid var(--line-strong); display:flex; align-items:center; justify-content:center;
+  transition:all .25s var(--ease);
+}
+.vote-card.selected .check{ background:var(--gold); border-color:var(--gold); }
+.vote-card.selected .check svg{ opacity:1; transform:scale(1); }
+.vote-card .check svg{ width:14px;height:14px; opacity:0; transform:scale(.5); transition:all .2s; color:#1A1304; }
+.vote-card details{ margin-top:16px; }
+.vote-card summary{
+  cursor:pointer; font-size:13px; color:var(--ink-dim); list-style:none;
+  display:flex; align-items:center; gap:6px; user-select:none;
+}
+.vote-card summary::-webkit-details-marker{ display:none; }
+.vote-card summary .chev{ transition:transform .25s; width:11px; height:11px; }
+.vote-card details[open] summary .chev{ transform:rotate(90deg); }
+.dest-list{ margin:10px 0 0; padding:0; list-style:none; font-size:13.5px; color:var(--ink-dim); line-height:1.5;}
+.dest-list li{ padding:6px 0 6px 22px; position:relative; border-top:1px solid var(--line); }
+.dest-list li:first-child{ border-top:none; }
+.dest-list li::before{
+  content:counter(li); counter-increment:li;
+  position:absolute; left:0; top:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint);
+}
+.dest-list{ counter-reset: li; }
+
+/* confirm screen */
+.summary-table{ margin-top:24px; border-top:1px solid var(--line); }
+.summary-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px 2px; border-bottom:1px solid var(--line); gap:16px;
+}
+.summary-row .k{ font-size:13px; color:var(--ink-faint); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em; }
+.summary-row .v{ font-size:16px; font-weight:600; text-align:right; }
+.summary-row.total .v{ font-family:var(--font-mono); font-size:20px; color:var(--gold); }
+
+/* done screen */
+.done-wrap{ text-align:center; }
+.done-mark{ width:84px; height:84px; margin:0 auto 20px; }
+.actions-center{ display:flex; justify-content:center; margin-top:30px; }
+
+/* misc */
+.footer-note{ text-align:center; padding:18px; font-size:11.5px; color:var(--ink-faint); font-family:var(--font-mono); }
+.footer-note button{ background:none;border:none;color:var(--ink-faint);text-decoration:underline; cursor:pointer;font-family:inherit;font-size:inherit; }
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--surface-3); border:1px solid var(--line-strong); color:var(--ink);
+  padding:14px 22px; border-radius:999px; font-size:14px; box-shadow:var(--shadow-card);
+  opacity:0; pointer-events:none; transition:all .35s var(--ease); z-index:50;
+  display:flex; align-items:center; gap:10px;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.error{ border-color:var(--danger); }
+.spinner{ width:16px;height:16px;border-radius:50%; border:2px solid rgba(26,19,4,0.3); border-top-color:#1A1304; animation:spin .7s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+@keyframes popIn{ from{ opacity:0; transform:translateY(10px) scale(.92); } to{ opacity:1; transform:translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:.001s !important; transition-duration:.001s !important; } }
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z" fill="none" stroke="#D2A24C" stroke-width="1.2"/></svg>
+      Voting Ziarah
+    </div>
+    <div class="progress-rail" id="progressRail"></div>
+  </div>
+
+  <main id="screens">
+
+    <!-- ============= SCREEN 0: PENGUMUMAN ============= -->
+    <section class="screen active" data-screen="welcome">
+      <div class="eyebrow"><span class="rule"></span> Pengumuman Madrasah</div>
+      <h1 class="hero-title">Musyawarah penentuan<br><em>tujuan ziarah</em> Tahun Ajaran 2026/2027.</h1>
+      <p class="lede">Segala puji syukur kita panjatkan kehadirat Allah SWT, shalawat serta salam semoga tercurahkan kepada Nabi Muhammad SAW beserta keluarga, para sahabat dan pengikutnya yang istiqomah hingga akhir zaman.</p>
+	  <p class="lede">Sehubungan dengan akan dilaksanakannya kegiatan ziaroh kelas VIII yang insya Alloh akan dilaksanakan pada tanggal 19/20 Desember 2026. </p>
+	  <p class="lede">Kami meminta voting terkait tujuan ziaroh. Karena ada dua pilihan rute dengan tarif yang berbeda, setiap siswa diminta memberikan satu suara untuk menentukan tujuan yang akan dipilih bersama.</p>
+      
+      <div class="notice">
+        <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2 L21 7 V12 C21 17 17 21 12 22 C7 21 3 17 3 12 V7 Z" stroke="#D2A24C" stroke-width="1.4"/><path d="M9 12l2 2 4-4" stroke="#D2A24C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="txt">
+          <b>Sebelum memilih:</b>
+          <ul>
+            <li>Voting bersifat satu suara per siswa.</li>
+            <li>Pilih salah satu rute — pilihan tidak dapat diganti setelah dikirim.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnStart">
+          Mulai Voting
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============= SCREEN 1: IDENTITAS (Dropdown) ============= -->
+    <section class="screen" data-screen="identitas">
+      <div class="eyebrow"><span class="rule"></span> Langkah 1 dari 3</div>
+      <h2 class="hero-title" style="font-size:clamp(24px,4vw,32px);">Data Diri.</h2>
+      <p class="lede">Silakan lengkapi data kelas dan nama kamu di bawah ini.</p>
+
+      <div class="form-group">
+        <label class="form-label" for="selectKelas">Pilih Kelas</label>
+        <select id="selectKelas" class="form-select">
+          <option value="" disabled selected>-- Pilih Kelas Anda --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="selectNama">Pilih Nama Lengkap</label>
+        <select id="selectNama" class="form-select" disabled>
+          <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnToVote" disabled>
+          Lanjut Pilih Tujuan
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============= SCREEN 2: VOTING ============= -->
+    <section class="screen" data-screen="vote">
+      <div class="breadcrumb">
+        <span class="back" id="backToIdentitas">← Kembali ke Data Diri</span>
+      </div>
+      <div class="identity-confirm">
+        <div class="who">
+          <div class="lbl">Memilih sebagai</div>
+          <div class="nm" id="voteWhoName">—</div>
+          <div class="kl">Kelas <span id="voteWhoKelas">—</span></div>
+        </div>
+      </div>
+
+      <h2 class="hero-title" style="font-size:clamp(24px,4vw,32px); margin-top:26px;">Pilih satu tujuan ziarah.</h2>
+
+      <div class="vote-grid">
+        <button class="vote-card" data-opt="jateng">
+          <div class="check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="tag">Opsi 1</span>
+          <h3>Ziarah Jawa Tengah</h3>
+          <div class="price">Rp 350.000 <small>/ siswa</small></div>
+          <details>
+            <summary><svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Lihat 5 tujuan</summary>
+            <ol class="dest-list" id="listJateng"></ol>
+          </details>
+        </button>
+
+        <button class="vote-card" data-opt="jatim">
+          <div class="check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="tag">Opsi 2</span>
+          <h3>Ziarah Jawa Timur</h3>
+          <div class="price">Rp 470.000 <small>/ siswa</small></div>
+          <details>
+            <summary><svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Lihat 6 tujuan</summary>
+            <ol class="dest-list" id="listJatim"></ol>
+          </details>
+        </button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnToConfirm" disabled>
+          Lanjutkan
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============= SCREEN 3: KONFIRMASI ============= -->
+    <section class="screen" data-screen="confirm">
+      <div class="breadcrumb">
+        <span class="back" id="backToVote">← Ubah pilihan ziarah</span>
+      </div>
+      <div class="eyebrow"><span class="rule"></span> Langkah 3 dari 3</div>
+      <h2 class="hero-title" style="font-size:clamp(24px,4vw,32px);">Periksa sebelum mengirim.</h2>
+      <div class="card" style="margin-top:20px;">
+        <div class="summary-table">
+          <div class="summary-row"><div class="k">Nama</div><div class="v" id="cfNama">—</div></div>
+          <div class="summary-row"><div class="k">Kelas</div><div class="v" id="cfKelas">—</div></div>
+          <div class="summary-row"><div class="k">Tujuan</div><div class="v" id="cfTujuan">—</div></div>
+          <div class="summary-row total"><div class="k">Tarif</div><div class="v" id="cfHarga">—</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnSubmit">
+            <span id="submitLabel">Kirim Suara</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= SCREEN 4: SELESAI ============= -->
+    <section class="screen" data-screen="done">
+      <div class="done-wrap">
+        <svg class="done-mark" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#D2A24C" stroke-width="1.4"/>
+          <path d="M8 12.5l2.6 2.6L16.5 9" stroke="#D2A24C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2 class="hero-title">Suara kamu sudah tercatat.</h2>
+        <p class="lede" style="margin:14px auto 0;">Terima kasih, <b id="doneNama" style="color:var(--ink)">—</b>. Hasil voting akan disampaikan oleh wali kelas setelah periode pemilihan ditutup.</p>
+        <div class="actions-center">
+          <button class="btn btn-ghost" id="btnRestart">Selesai — gantian siswa lain</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="footer-note">
+    Sistem Voting Ziarah · Madrasah &nbsp;·&nbsp;
+    <button id="btnReset" title="Hapus catatan vote di perangkat ini">reset vote perangkat ini</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- hidden submission target for Google Form -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none"></iframe>
+<form id="gformHidden" method="POST" target="hidden_iframe" style="display:none"></form>
+
+<!-- MEMANGGIL DATABASE SISWA EKSTERNAL -->
+<script src="data_siswa.js"></script>
+
+<script>
+/* ============================================================================
+   KONFIGURASI — GOOGLE FORM
+   ============================================================================ */
+const CONFIG = {
+  // Ganti URL di bawah dengan URL formResponse Google Form Anda
+  GOOGLE_FORM_ACTION: "https://docs.google.com/forms/d/e/1FAIpQLScFH0omMsfHOoq4ur-C1SVjHpQcuA775lyzTyxmgt_KbMwrdg/formResponse",
+  
+  ENTRY_KELAS:  "entry.691777415", // ID Entry untuk Kelas
+  ENTRY_NAMA:   "entry.1052212412", // ID Entry untuk Nama
+  ENTRY_PILIHAN:"entry.518985874", // ID Entry untuk Pilihan Ziarah
+};
+
+/* PILIHAN TUJUAN ZIARAH */
+const PRICE = { jateng: 350000, jatim: 470000 };
+const DESTINASI = {
+  jateng: ["Sunan Kudus", "Sunan Kalijaga", "Raden Fatah", "Mbah Suroh Payaman", "Gunung Pring"],
+  jatim: ["Mba Munawir, dan Mbah Ali Maksum Krapyak", "Joko Tingkir Sragen", " Syekh Kholil Bangkalan", "Sunan Ampel", "Gus Dur dan Hadrotussyaikh Hasyim Asy'ari", "Syekh Jumadil Kubro (tambahan menyesuaikan durasi)"]
+};
+const OPT_LABEL = { jateng: "Ziarah Jawa Tengah", jatim: "Ziarah Jawa Timur" };
+
+/* ============================================================================
+   STATE & NAVIGATION
+   ============================================================================ */
+const state = { kelas:null, nama:null, pilihan:null, submitting:false };
+const STEPS = ["identitas","vote","confirm"]; // Langkah disederhanakan karena identitas digabung
+
+function starSVG(){ return '<svg class="star-dot" viewBox="0 0 24 24"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>'; }
+function renderProgress(activeScreen){
+  const rail = document.getElementById("progressRail");
+  if(activeScreen === "welcome" || activeScreen === "done"){ rail.innerHTML = ""; return; }
+  const labels = { identitas:"Identitas", vote:"Pilihan", confirm:"Kirim" };
+  const idx = STEPS.indexOf(activeScreen);
+  rail.innerHTML = STEPS.map((s,i)=>{
+    const cls = i < idx ? "done" : (i === idx ? "active" : "");
+    const sep = i < STEPS.length-1 ? '<span class="sep"></span>' : "";
+    return `<span class="step ${cls}">${starSVG()}<span class="label">${labels[s]}</span></span>${sep}`;
+  }).join("");
+}
+
+function goTo(name){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelector(`.screen[data-screen="${name}"]`).classList.add("active");
+  renderProgress(name);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function toast(msg, isError){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.toggle("error", !!isError); t.classList.add("show");
+  clearTimeout(t._hideTimer); t._hideTimer = setTimeout(()=>t.classList.remove("show"), 3200);
+}
+
+/* ============================================================================
+   RENDER: IDENTITAS (Dropdown Logic)
+   ============================================================================ */
+const selectKelas = document.getElementById("selectKelas");
+const selectNama = document.getElementById("selectNama");
+const btnToVote = document.getElementById("btnToVote");
+
+function initDropdowns(){
+  // Mengambil data kelas dari file data-siswa.js (Variabel KELAS_DATA)
+  if(typeof KELAS_DATA === 'undefined') {
+    alert("Error: File data-siswa.js tidak ditemukan atau gagal dimuat.");
+    return;
+  }
+  
+  // Isi dropdown Kelas
+  selectKelas.innerHTML = '<option value="" disabled selected>-- Pilih Kelas Anda --</option>';
+  Object.keys(KELAS_DATA).forEach(k => {
+    selectKelas.add(new Option(k, k));
+  });
+
+  // Saat kelas berubah
+  selectKelas.addEventListener("change", (e) => {
+    state.kelas = e.target.value;
+    state.nama = null;
+    btnToVote.disabled = true;
+    
+    selectNama.innerHTML = '<option value="" disabled selected>-- Pilih Nama Anda --</option>';
+    if(state.kelas && KELAS_DATA[state.kelas]){
+      selectNama.disabled = false;
+      KELAS_DATA[state.kelas].forEach(n => {
+        selectNama.add(new Option(n, n));
+      });
+    } else {
+      selectNama.disabled = true;
+    }
+  });
+
+  // Saat nama berubah
+  selectNama.addEventListener("change", (e) => {
+    state.nama = e.target.value;
+    btnToVote.disabled = !state.nama;
+  });
+}
+
+/* ============================================================================
+   RENDER: VOTE & CONFIRM
+   ============================================================================ */
+function renderDestinasi(){
+  document.getElementById("listJateng").innerHTML = DESTINASI.jateng.map(d=>`<li>${d}</li>`).join("");
+  document.getElementById("listJatim").innerHTML = DESTINASI.jatim.map(d=>`<li>${d}</li>`).join("");
+}
+
+function setupVoteCards(){
+  document.querySelectorAll(".vote-card").forEach(card=>{
+    card.addEventListener("click", (e)=>{
+      if(e.target.closest("details")) return; 
+      document.querySelectorAll(".vote-card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      state.pilihan = card.dataset.opt;
+      document.getElementById("btnToConfirm").disabled = false;
+    });
+  });
+}
+
+function renderConfirm(){
+  document.getElementById("cfNama").textContent = state.nama;
+  document.getElementById("cfKelas").textContent = state.kelas;
+  document.getElementById("cfTujuan").textContent = OPT_LABEL[state.pilihan];
+  document.getElementById("cfHarga").textContent = "Rp " + PRICE[state.pilihan].toLocaleString("id-ID");
+}
+
+/* ============================================================================
+   ANTI DOUBLE VOTE
+   ============================================================================ */
+function votedKey(){ return "ziaroh_voted_v2"; }
+function getVotedList(){ try{ return JSON.parse(localStorage.getItem(votedKey()) || "[]"); }catch(e){ return []; } }
+function hasVoted(kelas, nama){ return getVotedList().includes(`${kelas}|${nama}`); }
+function markVoted(kelas, nama){
+  const list = getVotedList(); const key = `${kelas}|${nama}`;
+  if(!list.includes(key)){ list.push(key); }
+  localStorage.setItem(votedKey(), JSON.stringify(list));
+}
+
+/* ============================================================================
+   SUBMIT KE GOOGLE FORM
+   ============================================================================ */
+function submitToGoogleForm(){
+  return new Promise((resolve)=>{
+    const form = document.getElementById("gformHidden");
+    form.innerHTML = ""; form.action = CONFIG.GOOGLE_FORM_ACTION;
+    const fields = {
+      [CONFIG.ENTRY_KELAS]: state.kelas,
+      [CONFIG.ENTRY_NAMA]: state.nama,
+      [CONFIG.ENTRY_PILIHAN]: OPT_LABEL[state.pilihan],
+    };
+    Object.entries(fields).forEach(([k,v])=>{
+      const input = document.createElement("input");
+      input.type = "hidden"; input.name = k; input.value = v; form.appendChild(input);
+    });
+    const iframe = document.getElementById("hidden_iframe");
+    iframe.addEventListener("load", onLoad);
+    function onLoad(){ iframe.removeEventListener("load", onLoad); resolve(true); }
+    form.submit();
+    setTimeout(()=>resolve(true), 1800);
+  });
+}
+
+/* ============================================================================
+   WIRING ANTAR LAYAR
+   ============================================================================ */
+document.getElementById("btnStart").addEventListener("click", () => goTo("identitas"));
+
+document.getElementById("backToIdentitas").addEventListener("click", () => goTo("identitas"));
+document.getElementById("backToVote").addEventListener("click", () => goTo("vote"));
+
+btnToVote.addEventListener("click", () => {
+  if(!state.kelas || !state.nama) return;
+  // Cek apakah siswa ini sudah vote di perangkat ini
+  if(hasVoted(state.kelas, state.nama)){
+    toast(`${state.nama} sudah melakukan voting sebelumnya.`, true);
+    return;
+  }
+  document.getElementById("voteWhoName").textContent = state.nama;
+  document.getElementById("voteWhoKelas").textContent = state.kelas;
+  
+  // Reset pilihan ziarah
+  state.pilihan = null;
+  document.querySelectorAll(".vote-card").forEach(c=>c.classList.remove("selected"));
+  document.getElementById("btnToConfirm").disabled = true;
+  
+  goTo("vote");
+});
+
+document.getElementById("btnToConfirm").addEventListener("click", ()=>{
+  if(!state.pilihan){ toast("Pilih salah satu tujuan terlebih dahulu.", true); return; }
+  renderConfirm(); goTo("confirm");
+});
+
+document.getElementById("btnSubmit").addEventListener("click", async ()=>{
+  if(state.submitting) return;
+  if(CONFIG.GOOGLE_FORM_ACTION.includes("REPLACE_WITH_YOUR_FORM_ID")){
+    alert("PERINGATAN: Link Google Form belum disetting di dalam kode HTML. Data tidak akan masuk ke Google Sheets.");
+  }
+  state.submitting = true;
+  const btn = document.getElementById("btnSubmit"); btn.disabled = true;
+  document.getElementById("submitLabel").innerHTML = '<span class="spinner"></span> Mengirim…';
+
+  try{
+    await submitToGoogleForm();
+    markVoted(state.kelas, state.nama);
+    document.getElementById("doneNama").textContent = state.nama;
+    goTo("done");
+  }catch(err){
+    toast("Gagal mengirim. Periksa koneksi internet dan coba lagi.", true);
+  }finally{
+    state.submitting = false; btn.disabled = false;
+    document.getElementById("submitLabel").textContent = "Kirim Suara";
+  }
+});
+
+document.getElementById("btnRestart").addEventListener("click", ()=>{
+  state.kelas = null; state.nama = null; state.pilihan = null;
+  selectKelas.value = ""; selectNama.innerHTML = '<option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>'; selectNama.disabled = true;
+  btnToVote.disabled = true;
+  goTo("welcome");
+});
+
+document.getElementById("btnReset").addEventListener("click", ()=>{
+  if(confirm("Hapus seluruh catatan 'sudah memilih' di perangkat ini? Tindakan ini hanya memengaruhi memori HP/Laptop ini.")){
+    localStorage.removeItem(votedKey()); toast("Catatan perangkat ini telah dihapus.");
+  }
+});
+
+/* init */
+initDropdowns();
+renderDestinasi();
+setupVoteCards();
+renderProgress("welcome");
+</script>
+</body>
+</html>
